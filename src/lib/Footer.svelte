@@ -2,12 +2,12 @@
   import Icon from '$/lib/Icon.svelte';
 
   const footerInfo = {
-    author: 'Alicia Sykes',
-    authorSite: 'https://github.com/lissy93',
-    license: 'MIT',
-    licenseLink: 'https://github.com/Lissy93/cheat-code/blob/master/LICENSE',
+    author: 'mfarhan',
+    authorSite: 'https://github.com/intigration',
+    license: 'About',
+    link:'engr-farhan.netlify.app',
     copyright: true,
-    source: 'https://github.com/lissy93/cheat-code',
+    source: 'https://github.com/intigration',
   };
 </script>
 
@@ -16,9 +16,9 @@
     © <a href={footerInfo.authorSite} target="_blank" rel="noreferrer"
       >{footerInfo.author}</a
     >
-    {new Date().getFullYear()} - Licensed under
-    <a href={footerInfo.licenseLink} target="_blank" rel="noreferrer"
-      >{footerInfo.license}</a
+    {new Date().getFullYear()} - 
+    <a href=https://{footerInfo.link} target="_blank" 
+      >{footerInfo.link}</a
     >
     - View on
     <a href={footerInfo.source} target="_blank" rel="noreferrer">

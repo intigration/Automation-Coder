@@ -1,23 +1,74 @@
-import type { RequestHandler } from './$types';
-import { json } from '@sveltejs/kit';
-import { Configuration, OpenAIApi } from 'openai';
-import { env } from '$env/dynamic/private';
+import { Message } from '@/types/chat';
+import { OllamaModel } from '@/types/ollama';
 
-const configuration = new Configuration({
-  apiKey: env.OPENAI_API_KEY,
-});
+import { OLLAMA_HOST } from '../data/const';
 
-const openai = new OpenAIApi(configuration);
+import {
+  ParsedEvent,
+  ReconnectInterval,
+  createParser,
+} from 'eventsource-parser';
 
-export const POST = (async ({ request }) => {
-  const { messages } = await request.json();
+export class OllamaError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = 'OllamaError';
+  }
+}
 
-  const chatGPT = await openai.createChatCompletion({
-    model: 'gpt-3.5-turbo',
-    messages,
+export const OllamaStream = async (
+  model: string,
+  systemPrompt: string,
+  temperature : number,
+  prompt: string,
+) => {
+  let url = `${OLLAMA_HOST}/api/generate`;
+  const res = await fetch(url, {
+    headers: {
+      'Accept': 'application/json',
+      'Content-Type': 'application/json',
+      'Cache-Control': 'no-cache',
+      'Pragma': 'no-cache',
+    },
+    method: 'POST',
+    body: JSON.stringify({
+      model: model,
+      prompt: prompt,
+      system: systemPrompt,
+      options: {
+        temperature: temperature,
+      },
+    }),
   });
 
-  const chatGPTMessage = chatGPT.data.choices[0].message;
+  const encoder = new TextEncoder();
+  const decoder = new TextDecoder();
 
-  return json(chatGPTMessage);
-}) satisfies RequestHandler;
+  if (res.status !== 200) {
+    const result = await res.json();
+    if (result.error) {
+      throw new OllamaError(
+        result.error
+      );
+    } 
+  }
+
+  const responseStream = new ReadableStream({
+    async start(controller) {
+      try {
+        for await (const chunk of res.body as any) {
+          const text = decoder.decode(chunk); 
+          const parsedData = JSON.parse(text); 
+          if (parsedData.response) {
+            controller.enqueue(encoder.encode(parsedData.response)); 
+          }
+        }
+        controller.close();
+      } catch (e) {
+        controller.error(e);
+      }
+    },
+  });
+  
+  return responseStream;
+};

@@ -7,7 +7,7 @@ export const descriptions: Descriptions = {
     placeholder: 'Paste your code to refactor here...',
     btnText: 'Improve!',
   },
-  'Find Bug': {
+  Update: {
     intro:
       'The bug finding tool, will identify any issues that may be causing your code to fail, and suggest fixes.',
     placeholder: 'Paste your code to debug here...',

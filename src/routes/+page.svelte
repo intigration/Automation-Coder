@@ -3,12 +3,14 @@
   import { slide } from 'svelte/transition';
   import Icon from '$/lib/Icon.svelte';
   import type { ChatMessage, TabDescription } from '$/types/chat.types';
-  import { proompts } from '$/data/proompts';
+  import { prompts } from '$/data/prompts';
   import { messageLog } from '$/data/MessageLogStore';
   import { descriptions } from '$/data/TabDescriptions';
   import '$/styles/really-bad-styles.scss';
+import {OLLAMA_HOST} from '../data/const'
+let url = `${OLLAMA_HOST}/api/generate`;
 
-  const tabs = ['Refactor', 'Find Bug', 'Explain', 'Generate'] as const;
+  const tabs = ['Refactor', 'Update', 'Explain', 'Generate'] as const;
 
   let newMessage = '';
   let loading = false;
@@ -19,10 +21,9 @@
 
     const messages = [
       ...$messageLog[selectedTab],
-      { role: 'user', content: `${proompts[selectedTab]}\n\n${newMessage}` },
+      { role: 'user', content: `${prompts[selectedTab]}\n\n${newMessage}` },
     ] satisfies ChatMessage[];
-
-    const chatGPTMessage = await fetch('/', {
+    const chatGPTMessage = await fetch(url, {
       method: 'POST',
       body: JSON.stringify({ messages }),
     }).then((res) => res.json() as Promise<{ messages: ChatMessage[] }>);
@@ -53,18 +54,18 @@
 
 <main>
   <!-- Heading -->
-  <h1>Cheat_Code</h1>
+  <h1>Test Manager</h1>
 
   <!-- Short introduction -->
   <div class="description">
     <i class="desc-1"
-      >An AI-powered coding assistant, to generate, fix and improve code.</i
+      >An AI-powered test manager, to generate, fix and improve test-cases.</i
     >
     <i class="desc-2"
-      >Built as a demo of OpenAI's GPT API, using the code-davinci-002 model.</i
+      >Built as a demo of ollama and OpenAI's GPT API, using the code-davinci-002 model.</i
     >
-    <a href="https://github.com/lissy93/cheat-code"
-      ><Icon name="github" />github.com/lissy93/cheat-code</a
+    <a href="https://github.com/intigration/"
+      ><Icon name="github" />github.com/intigration</a
     >
   </div>
 

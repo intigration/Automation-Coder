@@ -1,10 +1,12 @@
-const tabs = ['Refactor', 'Find Bug', 'Explain', 'Generate'] as const;
+const tabs = ['Refactor', 'Update', 'Usecase', 'Generate'] as const;
 
 export type Tab = typeof tabs[number];
 
 export interface ChatMessage {
+
   role: 'user' | 'system';
   content: string;
+
 }
 
 export type MessageLog = Record<Tab, ChatMessage[]>;

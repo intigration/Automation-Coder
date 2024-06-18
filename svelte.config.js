@@ -29,6 +29,8 @@ const config = {
     ]),
     alias: {
       '$/*': 'src/*',
+      '@/*': 'src/*'
+
     },
   },
 };
